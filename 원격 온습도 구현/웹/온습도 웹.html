@@ -1,0 +1,409 @@
+
+<head>
+	<title>201711396 이지훈 11번째 과제</title>
+	<meta charset="UTF-8">
+	<link href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700" rel="stylesheet" type="text/css">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+<style>
+html,body {
+    background: #f2f2f2;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+	font-family: Roboto, sans-serif;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    margin: 1em 0 2em;
+    font-weight: 30;
+    color: #999;
+    position: relative;
+		font-size: 25px;
+}
+
+h1:after {
+    content: "";
+    width: 100px;
+    height: 1px;
+    position: absolute;
+    bottom: -1em;
+    background-color: #ddd;
+    left: 50%;
+    margin-left: -50px;
+}
+/* CARD */
+
+#temperatura .card-header {
+    background-color: #EC6F69;
+}
+
+#umidita .card-header {
+    background-color: #A6C659;
+}
+
+#umidita2 .card-header {
+    background-color: #B2EBF4;
+}
+
+
+
+.card {
+    background-color: #fff;
+    width: 600px;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    margin: 2em;
+    display: inline-block;
+}
+
+.card1 {
+    background-color: #fff;
+    width: 2400px;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    margin: 2em;
+    display: inline-block;
+}
+
+.card svg {
+	display: inline-block;
+	width: 100%;
+	height: auto;
+}
+
+.card-header {
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    min-height: 500px;
+    z-index: 1;
+    text-align: left;
+}
+
+
+
+.left-side {
+    float: left;
+    width: 60%;
+}
+
+h2.type {
+    font-size: 1.2em;
+    font-weight: 300;
+    margin: 0 0 20px;
+    position: relative;
+}
+
+h2.type:after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background-color: #fff;
+    left: 0;
+    bottom: -11px;
+}
+
+
+div.data {
+    font-size: 5em;
+    font-weight: 100;
+    margin-top: 0.3em;
+    display: block;
+    line-height: 1em;
+}
+
+.weather-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    width: 30%;
+    transform: translateY(-50%);
+}
+
+.header-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-position: center;
+    background-size: cover;
+    opacity: .1;
+    z-index: -1;
+}
+
+
+</style>
+
+
+
+
+<!-- JS per il funzionamento di HBR -->
+<!-- 웹을 꾸미기 위한 스크립트  -->
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<script type="text/javascript" src="http://www.hotblackrobotics.com/cloud/webgui/static/js/initros.js"></script>
+
+</head>
+<body>
+ <div class="container">
+ <h1>201711396 이지훈 온습도 웹사이트</h1>
+ <div id="chartContainer" style="height: 400px; width: 100%;"></div><div class="container">
+		<!-- //파이어베이스를 웹이랑 연동하기위해 필요한 스크립트 -->
+	  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+	  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
+		<script>
+
+</script>
+		<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBdAj166CrUvyOgNTs3SIzzf0kIoDJQKoA",
+    authDomain: "android-project-d82ce.firebaseapp.com",
+    databaseURL: "https://android-project-d82ce.firebaseio.com",
+    projectId: "android-project-d82ce",
+    storageBucket: "android-project-d82ce.appspot.com",
+    messagingSenderId: "741726159269",
+    appId: "1:741726159269:web:bbb76d09c7f05785c3284c",
+    measurementId: "G-EBXZE5GN83"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+	var chart = new CanvasJS.Chart("chartContainer", {
+			animationEnabled: true,
+			title: {
+					text: "Cloud based IoT Weather Monitor",
+					fontFamily: "Helvetica",
+					fontWeight: "bold",
+					fontColor: '#03254E',
+					fontSize: 22,
+			},
+			legend: {
+					fontSize: 15,
+					// verticalAlign: "top",  // legend를 top으로 이동함, 기본은 차트 bottom에 위치함
+			},
+			// 하단에 시간을 나타냄
+			axisX: {
+					title: "Time",
+					suffix: "s",
+					titleFontSize: 14,
+					titleFontColor: '#03254E',
+					valueFormatString: 'HH:mm:ss',
+					labelFontColor: '#03254E',
+			},
+			// 우측에 온도 표시를 나타냄
+			axisY: {
+					title: "Temperature",
+					suffix: "°C",
+					valueFormatString: "0.0#",
+					minimum: 0,
+					maximum: 50,
+					titleFontColor: '#03254E',
+					titleFontSize: 14,
+					labelFontColor: '#03254E',
+			},
+			// 좌측에 습도 표시를 나타냄
+			axisY2: {
+					title: "Humidity",
+					suffix: "%",
+					valueFormatString: "0.0#",
+					minimum: 0,
+					maximum: 90,
+					titleFontColor: '#03254E',
+					titleFontSize: 14,
+					labelFontColor: '#03254E',
+			},
+
+			toolTip: {
+					shared: true,
+
+					// Custom toolTip 사용
+					contentFormatter: function(e) {
+							var content = CanvasJS.formatDate(e.entries[0].dataPoint.x, "HH:mm:ss") + "<br>";
+							content += "Humidity: " + e.entries[0].dataPoint.y + " &deg;C<br>";
+							content += "Temperature: " + e.entries[1].dataPoint.y + " %";
+							return content;
+					}
+			},
+			animationEnabled: true,
+			data: [{
+					type: "splineArea", //change it to line, spline, area, column, pie,
+					name: "Humidity",
+					axisYType: "secondary",
+					showInLegend: true,
+					legendText: "Humidity",
+					markType: "circle",
+					markerSize: 1,
+					markerColor: "blue",
+					lineColor: "blue",
+					dataPoints: []   // Humidity 데이터 출력 값을 저장하는 배열
+			}, {
+				type: "splineArea", //change it to line, spline, area, column, pie,
+				name: "Temperature",
+				showInLegend: true,
+				legendText: "Temperature",
+				markType: "circle",
+				markerSize: 1,
+				markerColor: "red",
+				lineColor: "red",
+					 dataPoints: []  // Temperature 데이터 출력 값을 저장하는 배열
+			}]
+	});
+
+
+	// get the text value from the database
+	var dbRef = firebase.database().ref('logDHT/');
+
+
+	dbRef.on('child_added', function(snapshot) {
+			var row = snapshot.val();
+
+
+			// firebase DB로 부터 받은 날짜 문자열은 CanvasJS에서 사용하려면 반드시 Date 객체형으로 변환해야 함
+			row.time = new Date(row.time);
+			chart.options.data[0].dataPoints.push({   // data[0]는 Huminity 속성 배열
+					x: row.time,
+					y: row.humidity
+			});
+				chart.options.data[1].dataPoints.push({   // data[1]는 Temperature 속성 배열
+					x: row.time,
+					y: row.temperature
+				});
+			chart.render();  // 데이터 포인터 값을 챠트에 넣은 후 차트 출력
+	});
+
+	// header라는 id를 가지고 있는 <h1> 태그를 찾아 변수에 저장합니다.
+		 var element = document.getElementById("header");
+
+		// // 요소의 콘텐츠를 출력합니다.
+	 document.write(element.innerText);
+
+	</script>
+<!--
+	<script>
+
+	var objRef = firebase.database().ref().child('logDHT/');			//파이어 베이스에 엘이디 상태를 차일드 값을주고 데이터를받아오는것
+	objRef.on("child_added", function(snapshot){										//on 메서드는 value 이벤트가 발생하면 데이터베이스의 스탭샷을 가져온다.
+	clearTimeout(myTimer);
+
+	console.log(snapshot.val());
+	var newHumi = snapshot.val().humidity; 													//val 메서드는 스냅샷의 값을 뽑아 웹페이지(자바스크립트)에 데이터를 출력한다.
+	var newTemp = snapshot.val().temperature;
+	var newStatus = snapshot.val().status;
+	var newTime = snapshot.val().time;
+
+// 화면에 띄울 출력 부분 "온도, 습도, 네트워크 상태"
+	humi.innerText = "Humidity : " + newHumi + "%";
+	temp.innerText = "Temperature : " + newTemp + "℃";
+	stat.innerText = "Network : " + newStatus + "";
+	</script> -->
+
+		<script>
+		 																											//파이어 베이스에 온도 습도 각각 따로 차일드 값을주고 데이터를받아오는것
+					var myTimer;																		 //시간 함수를 추가
+					var objRef = firebase.database().ref().child('logDHT/');
+					objRef.on("child_added", function(snapshot) { //이벤트를 두개를 만듭니다.
+					clearTimeout(myTimer);
+					console.log(snapshot.val());
+					var newHumi = snapshot.val().humidity;
+					var newTemp = snapshot.val().temperature;
+					var newStatus = snapshot.val().status;
+
+					function onFunction(){    //on 함수를 생성
+					//	stat.set('ON')
+						stat.innerText = "NetWork : ON";
+					//	element.innerText = "ON";
+					 }
+					 function offFunction() {  //off 함수를 생성
+						 //stat.set('OFF')
+						 stat.innerText = "NetWork : OFF";
+					 }
+
+					humi.innerText = "Humidity     " + newHumi + "%";
+					temp.innerText = "Temperature  " + newTemp + "℃";
+
+					onFunction();
+
+					myTimer = setTimeout(function(){   //일정 시간 이후에 함수가 한번 실행되는 setTimeout함수를 생성
+						offFunction();
+
+				 }, 12000);
+
+
+				})
+
+</script>
+
+<!-- 온도 상태 박스 -->
+<div id="umidita3" class="card1">
+
+<div class="container">
+
+<div id="temperatura" class="card"  >
+	<div class="card-header" >
+		<!-- INFO -->
+		<div class="left-side">
+		<h2 class="type">TEMPERATURE</h2>
+		<div class="data"><h4 id="temp"></h4></div>
+
+		</div>
+
+		<div class="weather-icon">
+
+		</div>
+
+		<div class="header-bg" style="background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQmuX9gtpPEECLip3ea6ZtahdWiNFhUXOwlg8gFsBVOG0oEjbmD&usqp=CAU)"></div>
+	</div>
+</div>
+
+<!-- 습도 상태 박스 -->
+<div id="umidita" class="card">
+	<div class="card-header">
+		<!-- INFO -->
+		<div class="left-side">
+		<h2 class="type">HUMIDITY</h2>
+		<div class="data"><h4 id="humi"> </h4></div>
+		</div>
+		<div class="weather-icon">
+
+		</div>
+		<div class="header-bg" style="background-image: url(https://www.smartmiew.com/img/service-icon01.png)"></div>
+		<!-- 사진경로는 웹 주소를 따옴 -->
+
+	</div>
+	</div>
+
+  <!-- 네트워크 상태 박스  -->
+	<div id="umidita2" class="card">
+		<div class="card-header">
+			<!-- INFO -->
+			<div class="left-side">
+			<h2 class="type">STATUS</h2>
+			<div class="data"><h4 id=stat></h4></div>
+			</div>
+			<div class="weather-icon">
+
+			</div>
+			<div class="header-bg" style="background-image: url(https://w7.pngwing.com/pngs/646/726/png-transparent-computer-icons-compass-safari-blue-angle-logo.png)"></div>
+
+		</div>
+		</div>
+		</div>
+</div>
+
+
+</body>
