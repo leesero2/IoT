@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+ <html class="no-js">
+    <head>
+      	<title>201711396 이지훈 13번째 과제</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>On Off light</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="jsAnDcss/newWeb.css">
+    </head>
+    <body>
+      <!-- The core Firebase JS SDK is always required and must be listed first -->
+      <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
+
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDONU-uGHlXcQMhgqK3jccmFOd_mgngebs",
+    authDomain: "led-project2.firebaseapp.com",
+    databaseURL: "https://led-project2.firebaseio.com",
+    projectId: "led-project2",
+    storageBucket: "led-project2.appspot.com",
+    messagingSenderId: "1064159138530",
+    appId: "1:1064159138530:web:20c744326d40b9a24404bb",
+    measurementId: "G-C3ND8XPYQE"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
+<script>
+
+var objRef = firebase.database().ref().child('LED_STATUS'); //파이어 베이스에 엘이디 상태를 차일드 값을주고 데이터를받아오는것
+    objRef.on("child_added", function(snapshot) {     //on 메서드는 value 이벤트가 발생하면 데이터베이스의 스탭샷을 가져온다.
+                                                      //val 메서드는 스냅샷의 값을 뽑아 웹페이지(자바스크립트)에 데이터를 출력한다.
+      })
+      var dbRef = firebase.database().ref().child('LED_STATUS');
+      // ON 버턴 클릭하여 DB 값 true 설정
+      function onFunction() {
+        dbRef.set('ON')
+        document.getElementById('bulb').src='image/lightOn.png' //이미지 변경되도록
+
+      }
+
+      // OFF 버튼 클릭하여 DB 값 false 설정
+      function offFunction() {
+        dbRef.set('OFF')
+        document.getElementById('bulb').src='image/lightOff.png' // 이미지 변경되도록
+      }
+
+      // 현재 상태의 database 값 읽어오기
+      dbRef.on("value", function(snapshot) {
+        if (snapshot.val() == 'ON') {
+          OUT_TEXT.innerText = 'LED is ON';
+          onFunction();
+        } else if (snapshot.val() == 'OFF') {
+          OUT_TEXT.innerText = 'LED is OFF';
+          offFunction();
+        }
+      }, function (error) {
+        console.log("Error: " + error.code);
+      });
+    </script>
+
+
+
+    <center>
+	<h2>201711396 이지훈 LED ON OFF 웹사이트</h2>
+  <h3 id = "OUT_TEXT"></h3>
+		<!-- This is light image holder section When the bulb is off -->
+        <img id="bulb" src="image/lightOff.png"> <br><br>
+      <!-- js로 설정한 함수를 버튼 실행시 실행되도록 구현  -->
+        <button id="buttons1" onclick="onFunction();" >
+           <!-- onclick 에 함수를 지정 --> -->
+          <img src="image/swichOff.png">
+          <!-- 이미지를 변경  -->
+        </button>
+
+		<!-- By clicking thsi button we change the image of ligt Off -->
+
+        <button id="buttons2" onclick="offFunction();" class='hideFirst'
+        >
+
+		<!-- This is light image holder section When the bulb is On -->
+            <img src="image/swichOn.png">
+        </button>
+
+    </center>
+        <script src="jsAnDcss/newWeb.js" async defer></script>
+
+
+    </body>
+</html>
